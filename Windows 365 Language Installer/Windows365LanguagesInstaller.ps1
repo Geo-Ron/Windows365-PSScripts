@@ -364,8 +364,7 @@ Begin {
             DownloadLanguageFiles 
             Write-Output "`tStarting Install"
             InstallLanguageFiles $languageCode
-            Write-Output "`tCleanup"
-            CleanupLanguageFiles
+
         }
         catch {
             Write-Error $_
@@ -418,4 +417,7 @@ Process {
     }
 }
 
-End {}
+End {
+    Write-Output "`tCleanup"
+    CleanupLanguageFiles
+}
