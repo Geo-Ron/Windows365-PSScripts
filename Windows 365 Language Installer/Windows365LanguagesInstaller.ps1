@@ -340,25 +340,31 @@ Begin {
     }
 
     function Install($languageCode = $null) {
-
-        If ($null -eq $languageCode) {
-            ListSupportedLanguages
-            $languageNumber = Read-Host "Select number to install language"
-
-            if (!($languageNumber -in 1..$languages.Count)) {
-                Write-Host "Invalid language number." -ForegroundColor red
-                break
+        try {
+            
+    
+            If ($null -eq $languageCode) {
+                ListSupportedLanguages
+                $languageNumber = Read-Host "Select number to install language"
+    
+                if (!($languageNumber -in 1..$languages.Count)) {
+                    Write-Host "Invalid language number." -ForegroundColor red
+                    break
+                }
+    
+                $languageCode = $languages[$languageNumber - 1]
             }
-
-            $languageCode = $languages[$languageNumber - 1]
+            else {
+                #languageCode Remains
+            }
+    
+            DownloadLanguageFiles 
+            InstallLanguageFiles $languageCode
+            CleanupLanguageFiles
         }
-        else {
-            #languageCode Remains
+        catch {
+            Write-Error $_
         }
-
-        DownloadLanguageFiles 
-        InstallLanguageFiles $languageCode
-        CleanupLanguageFiles
     }
     #endregion FunctionDeclarations
 
