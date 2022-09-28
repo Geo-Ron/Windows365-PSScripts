@@ -191,7 +191,7 @@ Begin {
     }
 
     function DownloadLanguageFiles() {
-        $files = $languageFiles[$winver]
+        $files = $languageFiles[$OSPrefix + $winver]
 
         $space = 20
         foreach ($fileName in $files.Keys) {
@@ -219,7 +219,7 @@ Begin {
     }
 
     function GetOutputFilePath($fileName) {
-        return $downloadPath + $languageFiles[$winver][$fileName].Split("/")[-1]
+        return $downloadPath + $languageFiles[$OSPrefix + $winver][$fileName].Split("/")[-1]
     }
 
     function MountFile($filePath) {
