@@ -94,7 +94,7 @@ The script supports installing the following 38 languages:
 #> 
 
 Param(
-    [Parameter(Mandatory = $false,
+    [Parameter(Mandatory = $true,
         Position = 0,
         ParameterSetName = "DefaultParameterSet",
         ValueFromPipeline = $true,
