@@ -158,9 +158,9 @@ Begin {
         'FOD'          = 'https://software-download.microsoft.com/download/pr/19041.1.191206-1406.vb_release_amd64fre_FOD-PACKAGES_OEM_PT1_amd64fre_MULTI.iso'
         'InboxApps'    = 'https://software-download.microsoft.com/download/sg/19041.928.210407-2138.vb_release_svc_prod1_amd64fre_InboxApps.iso'
     }
-    $1121H2Files = @(
+    $1121H2Files = @{
         'LanguagePack' = 'https://software-download.microsoft.com/download/sg/22000.1.210604-1628.co_release_amd64fre_CLIENT_LOF_PACKAGES_OEM.iso'
-    )
+    }
     
     
     $languageFiles = @{
@@ -171,6 +171,7 @@ Begin {
         '1021H1' = $21H1Files
         '1021H2' = $21H1Files
         '1121H2' = $1121H2Files
+        '1122H2' = $1121H2Files
     }
     #endregion Variable Declarations
 
