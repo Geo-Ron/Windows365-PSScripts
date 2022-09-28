@@ -92,7 +92,7 @@ The script supports installing the following 38 languages:
     • Chinese (Traditional) 
 
 #> 
-
+[CmdletBinding()]
 Param(
     [Parameter(Mandatory = $true,
         Position = 0,
