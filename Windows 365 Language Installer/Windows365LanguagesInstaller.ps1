@@ -358,8 +358,11 @@ Begin {
                 #languageCode Remains
             }
     
+            Write-Output "`tDownloading files"
             DownloadLanguageFiles 
+            Write-Output "`tStarting Install"
             InstallLanguageFiles $languageCode
+            Write-Output "`tCleanup"
             CleanupLanguageFiles
         }
         catch {
