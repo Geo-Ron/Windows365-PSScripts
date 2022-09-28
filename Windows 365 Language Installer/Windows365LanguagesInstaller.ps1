@@ -102,7 +102,7 @@ Param(
         HelpMessage = "Specify the language code.")]
     [Alias("lang")]
     [ValidateNotNullOrEmpty()]
-    [string[]]
+    [string]
     $Language = $null
 )
 
