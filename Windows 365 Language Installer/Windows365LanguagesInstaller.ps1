@@ -187,7 +187,9 @@ Begin {
     function DownloadFile($fileName, $url, $outFile) {
         Write-Output "Downloading $fileName file..." 
         $ProgressPreference = 'SilentlyContinue'
-        Invoke-WebRequest -Uri $url -OutFile $outFile
+        If ((Test-Path -Path $outfile) -eq $false ) {
+            Invoke-WebRequest -Uri $url -OutFile $outFile
+        }
     }
 
     function DownloadLanguageFiles() {
