@@ -391,7 +391,7 @@ Process {
         If ($currentOSbuildVersion.Major -eq 10 -and $currentOSbuildVersion.Build -lt 22000 -and $currentOSbuildVersion.Build -ge 10240) {
             $OSPrefix = '10'
         }
-        elseif ($currentOSbuildVersion.Major -eq 10 -and $currentOSbuildVersion.Build -gt 22000) {
+        elseif ($currentOSbuildVersion.Major -eq 10 -and $currentOSbuildVersion.Build -ge 22000) {
             $OSPrefix = '11'
         }
 
