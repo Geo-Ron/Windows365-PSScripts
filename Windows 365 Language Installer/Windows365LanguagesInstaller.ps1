@@ -408,7 +408,7 @@ Process {
         ##Disable language pack cleanup##
         Disable-ScheduledTask -TaskPath "\Microsoft\Windows\AppxDeploymentClient\" -TaskName "Pre-staged app cleanup"
 
-        Write-Output "Install Windows $winver languages:" 
+        Write-Output "Install Windows $OSPrefix $winver languages:" 
         Install $lang
     }
 }
