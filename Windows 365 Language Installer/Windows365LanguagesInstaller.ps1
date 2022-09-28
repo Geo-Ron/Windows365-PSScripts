@@ -102,7 +102,7 @@ Param(
         HelpMessage = "Specify the language code.")]
     [Alias("lang")]
     [ValidateNotNullOrEmpty()]
-    [string]
+    [string[]]
     $Language = $null
 )
 
@@ -116,11 +116,13 @@ Begin {
         "lv-LV", "nb-NO", "nl-NL", "pl-PL", "pt-BR", "pt-PT", "ro-RO", "ru-RU", "sk-SK", "sl-SI", "sr-Cyrl-CS",
         "sv-SE", "th-TH", "tr-TR", "uk-UA", "zh-CN", "zh-TW")
 
-    If ($PSBoundParameters.ContainsKey('$Language') -eq $true) {
-        If ($language -notin $languages) {
-            Write-Warning "Specified language not supported."
-            Write-Warning "Supported languages: $($languages -join ", ")"
-            Break Script
+    If ($PSBoundParameters.ContainsKey('Language') -eq $true) {
+        foreach ($lang in $language) {
+            If ($lang -notin $languages) {
+                Write-Warning "Specified language $lang not supported."
+                Write-Warning "Supported languages: $($languages -join ", ")"
+                Break Script
+            }
         }
     }
 
@@ -340,16 +342,17 @@ Begin {
     function Install($languageCode = $null) {
 
         If ($null -eq $languageCode) {
-        ListSupportedLanguages
-        $languageNumber = Read-Host "Select number to install language"
+            ListSupportedLanguages
+            $languageNumber = Read-Host "Select number to install language"
 
-        if (!($languageNumber -in 1..$languages.Count)) {
-            Write-Host "Invalid language number." -ForegroundColor red
-            break
+            if (!($languageNumber -in 1..$languages.Count)) {
+                Write-Host "Invalid language number." -ForegroundColor red
+                break
+            }
+
+            $languageCode = $languages[$languageNumber - 1]
         }
-
-        $languageCode = $languages[$languageNumber - 1]
-        } else {
+        else {
             #languageCode Remains
         }
 
@@ -363,42 +366,45 @@ Begin {
 
 Process {
 
-    If (!(test-path $downloadPath)) {
-        New-Item -ItemType Directory -Force -Path $downloadPath
-    }
+    Foreach ($lang in $language) {
 
-    $currentWindowsIdentity = [Security.Principal.WindowsIdentity]::GetCurrent()
-    $currentWindowsPrincipal = [Security.Principal.WindowsPrincipal]$currentWindowsIdentity
+        If (!(test-path $downloadPath)) {
+            New-Item -ItemType Directory -Force -Path $downloadPath
+        }
+
+        $currentWindowsIdentity = [Security.Principal.WindowsIdentity]::GetCurrent()
+        $currentWindowsPrincipal = [Security.Principal.WindowsPrincipal]$currentWindowsIdentity
  
-    if ( -not $currentWindowsPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-        Write-Host "Script needs to be run as Administrator." -ForegroundColor red
-        Break Script
+        if ( -not $currentWindowsPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+            Write-Host "Script needs to be run as Administrator." -ForegroundColor red
+            Break Script
+        }
+
+        $currentOSbuildVersion = [System.Environment]::OSVersion.Version
+
+        If ($currentOSbuildVersion.Major -eq 10 -and $currentOSbuildVersion.Build -lt 22000 -and $currentOSbuildVersion.Build -ge 10240) {
+            $OSPrefix = '10'
+        }
+        elseif ($currentOSbuildVersion.Major -eq 10 -and $currentOSbuildVersion.Build -gt 22000) {
+            $OSPrefix = '11'
+        }
+
+        $winver = (Get-Item "HKLM:SOFTWARE\Microsoft\Windows NT\CurrentVersion").GetValue('DisplayVersion')
+        if (!$winver) {
+            $winver = (Get-Item "HKLM:SOFTWARE\Microsoft\Windows NT\CurrentVersion").GetValue('ReleaseId')
+        }
+
+        if (!$languageFiles[$OSPrefix + $winver]) {
+            Write-Host "Languages installer is not supportd Windows $winver." -ForegroundColor red
+            Break Script
+        }
+
+        ##Disable language pack cleanup##
+        Disable-ScheduledTask -TaskPath "\Microsoft\Windows\AppxDeploymentClient\" -TaskName "Pre-staged app cleanup"
+
+        Write-Output "Install Windows $winver languages:" 
+        Install $lang
     }
-
-    $currentOSbuildVersion = [System.Environment]::OSVersion.Version
-
-    If ($currentOSbuildVersion.Major -eq 10 -and $currentOSbuildVersion.Build -lt 22000 -and  $currentOSbuildVersion.Build -ge 10240) {
-        $OSPrefix = '10'
-    } elseif ($currentOSbuildVersion.Major -eq 10 -and $currentOSbuildVersion.Build -gt 22000) {
-        $OSPrefix = '11'
-    }
-
-    $winver = (Get-Item "HKLM:SOFTWARE\Microsoft\Windows NT\CurrentVersion").GetValue('DisplayVersion')
-    if (!$winver) {
-        $winver = (Get-Item "HKLM:SOFTWARE\Microsoft\Windows NT\CurrentVersion").GetValue('ReleaseId')
-    }
-
-    if (!$languageFiles[$OSPrefix+$winver]) {
-        Write-Host "Languages installer is not supportd Windows $winver." -ForegroundColor red
-        Break Script
-    }
-
-    ##Disable language pack cleanup##
-    Disable-ScheduledTask -TaskPath "\Microsoft\Windows\AppxDeploymentClient\" -TaskName "Pre-staged app cleanup"
-
-    Write-Output "Install Windows $winver languages:" 
-    Install
-
 }
 
 End {}
